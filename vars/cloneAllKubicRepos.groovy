@@ -22,7 +22,8 @@ def call(Map parameters = [:]) {
 
     timeout(5) {
         parallel 'automation': {
-            cloneKubicRepo(gitBase: gitBase, branch: branch, credentialsId: credentialsId, ignorePullRequest: ignorePullRequest, repo: "automation")
+            cloneKubicRepo(gitBase: gitBase, branch: "pod-scaling", credentialsId: credentialsId, repo: "automation")
+            sh(script: "find / -name default.yml")
         },
         'salt': {
             cloneKubicRepo(gitBase: gitBase, branch: branch, credentialsId: credentialsId, ignorePullRequest: ignorePullRequest, repo: "salt")

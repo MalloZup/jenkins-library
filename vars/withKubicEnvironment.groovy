@@ -24,6 +24,9 @@ def call(Map parameters = [:], Closure body) {
     boolean gitIgnorePullRequest = parameters.get('gitIgnorePullRequest', false)
     int masterCount = parameters.get('masterCount')
     int workerCount = parameters.get('workerCount')
+    def podName = parameters.get('podName')
+    int replicaCount = parameters.get('replicaCount')
+    int replicasCreationInterval = parameters.get('replicasCreationInterval')
 
     echo "Creating Kubic Environment"
 
@@ -86,6 +89,7 @@ def call(Map parameters = [:], Closure body) {
             }
 
             // Bootstrap the Kubic environment
+            // and fetch ${WORKSPACE}/kubeconfig
             stage('Bootstrap Environment') {
                 bootstrapEnvironment(environment: environment)
             }
@@ -98,6 +102,22 @@ def call(Map parameters = [:], Closure body) {
 
             // Execute the body of the test
             body()
+
+            // Create test pod
+            stage('Create Pod') {
+                createPod(podName: podName)
+            }
+
+            // Scale pod up
+            stage('Create Pod replicas') {
+                createPodReplicas(
+                    podName: podName,
+                    replicaCount: replicaCount,
+                    replicasCreationInterval: replicasCreationInterval
+                )
+            }
+
+
         } finally {
             // Gather logs from the environment
             stage('Gather Logs') {

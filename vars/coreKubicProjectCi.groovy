@@ -37,8 +37,11 @@ def call() {
             gitBranch: env.getEnvironment().get('CHANGE_TARGET', env.BRANCH_NAME),
             gitCredentialsId: 'github-token',
             masterCount: 3,
-            workerCount: 2) {
-
+            workerCount: 2,
+            podName: 'default',
+            replicaCount: 1000,
+            replicasCreationInterval: 300
+    ) {
         stage('Run Tests') {
             // TODO: Add some cluster tests, e.g. booting pods, checking they work, etc
             runTestInfra(environment: environment)
